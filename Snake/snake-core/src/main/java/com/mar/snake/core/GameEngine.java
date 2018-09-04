@@ -17,13 +17,14 @@ public class GameEngine {
 
    private GraphicEngine graphicsEngine;
    private SoundEngine soundEngine;
+   private Statistics statistics;
 
    private final Snake snake;
    private final Level level;
    private final FoodLogic foodLogic;
 
-   private boolean paused;
-   private boolean gameover;
+   private volatile boolean paused;
+   private volatile boolean gameover;
    private int speedInMs = DefaultValues.GAME_SPEED_IN_MS;
 
    public GameEngine() {
@@ -45,40 +46,8 @@ public class GameEngine {
       this.soundEngine = soundEngine;
    }
 
-   private void step() {
-      this.foodLogic.step();
-      this.snake.step();
-      handleCollision();
-   }
-
-   private void handleCollision() {
-      if (this.foodLogic.isFoodInContact()) {
-         this.soundEngine.playSnakeEatPiece();
-         this.foodLogic.reset();
-         this.snake.grow();
-      }
-
-      if (this.snake.isHurtingHimself()) {
-         this.endGame();
-      }
-
-      final Piece sHead = this.snake.getHead();
-      // Snake collide with a piece in the ground
-      final Piece piece = this.level.getSpot(sHead.getX(), sHead.getY());
-
-      if (piece instanceof LevelPiece) {
-         this.endGame();
-      }
-
-   }
-
    public boolean isGameOver() {
       return this.gameover;
-   }
-
-   private void endGame() {
-      this.soundEngine.playSnakeDie();
-      this.gameover = true;
    }
 
    public void redraw() {
@@ -106,31 +75,13 @@ public class GameEngine {
          this.graphicsEngine.drawFoodPiece(foodPiece.getX(), foodPiece.getY());
       }
 
+      this.graphicsEngine.drawStatistics(this.statistics);
+      
       if (this.gameover)
          this.graphicsEngine.drawGameOver();
 
       if (this.paused)
          this.graphicsEngine.drawPause();
-   }
-
-   private void startGame() {
-      this.soundEngine.playSoundTrak();
-      this.graphicsEngine.redrawAll();
-
-      new Thread(new Runnable() {
-         @Override
-         public void run() {
-            while (!GameEngine.this.gameover) {
-               if (!GameEngine.this.paused)
-                  step();
-               GameEngine.this.graphicsEngine.redrawAll();
-               try {
-                  Thread.sleep(GameEngine.this.speedInMs);
-               } catch (InterruptedException e) {
-               }
-            }
-         }
-      }).start();
    }
 
    public void sendSignal(Signal signal) {
@@ -180,8 +131,74 @@ public class GameEngine {
       case TURN_RIGHT:
          this.snake.toTheRight();
          break;
+      case END_GAME:
+         this.endGame();
+         break;
       default:
          break;
       }
+   }
+
+   public Statistics getStatistics() {
+      return this.statistics;
+   }
+   
+   private void step() {
+      this.foodLogic.step();
+      this.snake.step();
+      handleCollision();
+      this.statistics.upTime();
+   }
+
+   private void handleCollision() {
+      if (this.foodLogic.isFoodInContact()) {
+         this.soundEngine.playSnakeEatPiece();
+         this.foodLogic.reset();
+         this.snake.grow();
+         this.statistics.scoreUp();
+      }
+
+      if (this.snake.isHurtingHimself()) {
+         this.endGame();
+      }
+
+      final Piece sHead = this.snake.getHead();
+      // Snake collide with a piece in the ground
+      final Piece piece = this.level.getSpot(sHead.getX(), sHead.getY());
+
+      if (piece instanceof LevelPiece) {
+         this.endGame();
+      }
+
+   }
+
+   private Thread runningThread;
+
+   private void endGame() {
+      this.soundEngine.playSnakeDie();
+      this.gameover = true;
+      this.runningThread.interrupt();
+   }
+
+   private void startGame() {
+      this.statistics = new Statistics(this.speedInMs);
+      this.soundEngine.playSoundTrak();
+      this.graphicsEngine.redrawAll();
+
+      this.runningThread = new Thread(new Runnable() {
+         @Override
+         public void run() {
+            while (!GameEngine.this.gameover) {
+               if (!GameEngine.this.paused)
+                  step();
+               GameEngine.this.graphicsEngine.redrawAll();
+               try {
+                  Thread.sleep(GameEngine.this.speedInMs);
+               } catch (InterruptedException e) {
+               }
+            }
+         }
+      });
+      runningThread.start();
    }
 }

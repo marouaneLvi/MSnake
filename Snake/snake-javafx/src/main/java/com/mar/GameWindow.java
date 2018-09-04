@@ -9,11 +9,10 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.paint.Color;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -22,30 +21,25 @@ public class GameWindow extends Application {
    public static void main(String[] args) {
       Application.launch(args);
    }
-
+   
    @Override
    public void start(Stage primaryStage) throws Exception {
-      final Group root = new Group();
-      Scene scene = new Scene(root, 800, 600, Color.BEIGE);
-      final BorderPane borderpane = new BorderPane();
-      borderpane.setPrefSize(640, 480);
       final Button btn = new Button("Start");
       final GameEngine gEngine = new GameEngine();
-      final JavaFxGameGraphicImpl canvas = new JavaFxGameGraphicImpl(gEngine);
-      canvas.autosize();
 
-      borderpane.setTop(btn);
-      borderpane.setCenter(canvas);
-      root.getChildren().add(borderpane);
-
+      final CanvasPane canvasPane = new CanvasPane(gEngine, 340, 400);
+      final JavaFxGameGraphicImpl canvas = canvasPane.getCanvas();
+      BorderPane root = new BorderPane(canvasPane);
+      root.setTop(btn);
+      Scene scene = new Scene(root, 340, 400);
       btn.setOnAction(new EventHandler<ActionEvent>() {
          @Override
          public void handle(ActionEvent e) {
-            btn.setDisable(true);
-            btn.setVisible(false);
-            borderpane.setFocusTraversable(true);
-            borderpane.requestFocus();
-            borderpane.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            //btn.setDisable(true);
+            //btn.setVisible(false);
+            root.setFocusTraversable(true);
+            root.requestFocus();
+            root.setOnKeyPressed(new EventHandler<KeyEvent>() {
                public void handle(final KeyEvent keyEvent) {
                   switch (keyEvent.getCode()) {
                   case C:
@@ -105,4 +99,32 @@ public class GameWindow extends Application {
 
       });
    }
+
+   private static class CanvasPane extends Pane {
+
+      private final JavaFxGameGraphicImpl canvas;
+
+      public CanvasPane(GameEngine gameEngine, double width, double height) {
+          canvas = new JavaFxGameGraphicImpl(gameEngine);
+          getChildren().add(canvas);
+      }
+
+      public JavaFxGameGraphicImpl getCanvas() {
+          return canvas;
+      }
+
+      @Override
+      protected void layoutChildren() {
+          super.layoutChildren();
+          final double x = snappedLeftInset();
+          final double y = snappedTopInset();
+          final double w = snapSize(getWidth()) - x - snappedRightInset();
+          final double h = snapSize(getHeight()) - y - snappedBottomInset();
+          canvas.setLayoutX(x);
+          canvas.setLayoutY(y);
+          canvas.setWidth(w);
+          canvas.setHeight(h);
+          canvas.resetGraphics();;
+      }
+  }
 }

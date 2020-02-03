@@ -1,0 +1,1 @@
+Run the main you can find in the snake-javafx GameWindow class.

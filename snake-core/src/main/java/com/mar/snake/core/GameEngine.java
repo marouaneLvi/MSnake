@@ -57,7 +57,7 @@ public class GameEngine {
       List<Piece> digestingPieces = new ArrayList<Piece>();
       for (Piece snPiece : this.snake.getParts()) {
          if (snPiece == this.snake.getHead()) {
-            this.graphicsEngine.drawSnakeHeadPiece(snPiece.getX(), snPiece.getY());
+            this.graphicsEngine.drawSnakeHeadPiece(snPiece.getX(), snPiece.getY(), this.snake.getDirection());
          } else {
             if (!this.snake.isDigestingPart(snPiece)) {
                this.graphicsEngine.drawSnakePiece(snPiece.getX(), snPiece.getY());
@@ -182,7 +182,7 @@ public class GameEngine {
 
    private void startGame() {
       this.statistics = new Statistics(this.speedInMs);
-      this.soundEngine.playSoundTrak();
+      this.soundEngine.playSoundTrack();
       this.graphicsEngine.redrawAll();
 
       this.runningThread = new Thread(new Runnable() {

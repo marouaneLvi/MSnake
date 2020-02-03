@@ -4,6 +4,7 @@ import com.mar.snake.api.GraphicEngine;
 import com.mar.snake.core.GameEngine;
 import com.mar.snake.core.Statistics;
 
+import com.mar.snake.core.constant.Direction;
 import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -12,6 +13,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
 public class JavaFxGameGraphicImpl extends Canvas implements GraphicEngine {
+   private static final String PAUSE_TEXT = "PAUSE";
+   private static final String GAME_OVER_TEXT = "GAME_OVER";
+   private static final String SCORE = "Score : %d";
+   private static final String ELAPSED_TIME = "Passed Time : %s";
+   
    private GraphicsContext gc;
    /**
     * A top section is reserved for statistics.
@@ -20,7 +26,7 @@ public class JavaFxGameGraphicImpl extends Canvas implements GraphicEngine {
    private double blockSizeW;
    private double blockSizeH;
    private double pauseTextWidth;
-   private double gameoverTextWidth;
+   private double gameOverTextWidth;
    private final GameEngine gEngine;
 
    public JavaFxGameGraphicImpl(GameEngine gEngine) {
@@ -34,7 +40,7 @@ public class JavaFxGameGraphicImpl extends Canvas implements GraphicEngine {
       text1.setFont(Font.font(30));
       text2.setFont(Font.font(30));
       pauseTextWidth = text1.getLayoutBounds().getWidth();
-      gameoverTextWidth = text2.getLayoutBounds().getWidth();
+      gameOverTextWidth = text2.getLayoutBounds().getWidth();
       blockSizeW = this.getWidth()
             / this.gEngine.getGroundWidth();
       blockSizeH = (this.getHeight() - Y_OFFSET)
@@ -43,7 +49,7 @@ public class JavaFxGameGraphicImpl extends Canvas implements GraphicEngine {
    }
 
    @Override
-   public void drawSnakeHeadPiece(final int x, final int y) {
+   public void drawSnakeHeadPiece(final int x, final int y, final Direction direction) {
       gc.setFill(Color.RED);
       gc.fillOval(x * blockSizeW,
             getPieceYPosition(y), blockSizeW,
@@ -113,7 +119,7 @@ public class JavaFxGameGraphicImpl extends Canvas implements GraphicEngine {
       gc.setStroke(Color.WHITE);
       gc.setFill(Color.BLACK);
       gc.setFont(Font.font(30));
-      final double x = (this.getWidth() / 2) - (gameoverTextWidth / 2);
+      final double x = (this.getWidth() / 2) - (gameOverTextWidth / 2);
       final double y = this.getEffectiveHeight() / 2 + Y_OFFSET;
       gc.fillText(GAME_OVER_TEXT, x, y);
       gc.strokeText(GAME_OVER_TEXT, x, y);

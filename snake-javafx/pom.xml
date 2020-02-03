@@ -9,9 +9,6 @@
   </parent>
   <artifactId>snake-javafx</artifactId>
   <name>snake-javafx</name>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
   <dependencies>
     <dependency>
       <groupId>mar.core</groupId>

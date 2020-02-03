@@ -4,7 +4,7 @@ import com.mar.snake.api.SoundEngine;
 
 /**
  * Dummy Sound Engine with no effects.
- * Used for the samples as nothing is done regarding the sound.
+ * Used if sound needed.
  * @author Marouane
  */
 public class NoSoundEngineImpl implements SoundEngine {
@@ -16,6 +16,6 @@ public class NoSoundEngineImpl implements SoundEngine {
    public void playSnakeEatPiece() {}
 
    @Override
-   public void playSoundTrak() {}
+   public void playSoundTrack() {}
 
 }

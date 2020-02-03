@@ -9,5 +9,5 @@ package com.mar.snake.api;
 public interface SoundEngine {
    void playSnakeDie();
    void playSnakeEatPiece();
-   void playSoundTrak();
+   void playSoundTrack();
 }

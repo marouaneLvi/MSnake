@@ -1,6 +1,7 @@
 package com.mar.snake.api;
 
 import com.mar.snake.core.Statistics;
+import com.mar.snake.core.constant.Direction;
 
 /**
  * Clients need to implement this interface
@@ -9,16 +10,13 @@ import com.mar.snake.core.Statistics;
  * @author Marouane
  */
 public interface GraphicEngine {
-   String PAUSE_TEXT = "PAUSE";
-   String GAME_OVER_TEXT = "GAME_OVER";
-   String SCORE = "Score : %d";
-   String ELAPSED_TIME = "Passed Time : %s";
-   
-   void drawSnakeHeadPiece(int x, int y);
+   void drawSnakeHeadPiece(int x, int y, Direction direction);
    void drawSnakePiece(int x, int y);
+   void drawDigestingFoodPiece(int x, int y);
+
    void drawLevelPiece(int x,int y);
    void drawFoodPiece(int x, int y);
-   void drawDigestingFoodPiece(int x, int y);
+
    void drawPause();
    void drawGameOver();
    void drawStatistics(Statistics statistics);

@@ -18,4 +18,4 @@ Encapsulates all the game logic and provide interfaces to be implemented by end 
 * playSnakeEatPiece()
 * playSoundTrak()
 ## [snake-javafx](../snake-core/README.md)
-###### snake-swing(Not implemented yet)
+## [snake-swing] (Not implemented yet)
